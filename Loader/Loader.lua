@@ -25,7 +25,12 @@ if success then
             end
 
             if authorized then
-                print("Oyun Dogrulandi: " .. _G.Gname)
+                print("Oyun Dogrulandi: " .. _G.Gname)               
+game:GetService("StarterGui"):SetCore("SendNotification",{
+Title = "Enjoy!",
+Text = "Also open sourced.", 
+Duration = 10
+})
                 loadstring(game:HttpGet("https://raw.githubusercontent.com/emirontop3/Denco/refs/heads/main/Games/" .. game.PlaceId))()
             else
                 warn("Bu oyun icin yetkiniz yok. ID: " .. currentId)
