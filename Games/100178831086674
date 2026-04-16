@@ -1,7 +1,7 @@
 local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
 
 local Window = Rayfield:CreateWindow({
-    Name = "TimeBomb AnkleBreak | DencoHub",
+    Name = _G.Gname .. "| DencoHub",
     LoadingTitle = "Sistemler Hazırlanıyor...",
     LoadingSubtitle = "by DencoHub",
     ConfigurationSaving = { Enabled = false }
