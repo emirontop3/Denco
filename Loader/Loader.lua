@@ -6,16 +6,11 @@ local success, content = pcall(function()
 end)
 
 if success then
-    -- 'attempt to call a nil value' hatasını önlemek için loadstring'i güvenli çalıştıralım
     local func, err = loadstring(content)
     
     if func then
-        func() -- İçeriği çalıştırır ve _G.Sg tablosunu oluşturur
-        
-        -- Veri geldikten sonra kısa bir bekleme (opsiyonel)
+        func() 
         task.wait(0.1)
-
-        -- Kontrol kısmı
         if SupportedGameId then
             local currentId = game.PlaceId
             local authorized = false
@@ -23,18 +18,20 @@ if success then
             for name, id in pairs(SupportedGameId) do
                 if id == currentId then
                     authorized = true
-                    
+                    -- Oyun ismini global değişkene kaydediyoruz
+                    _G.Gname = name 
                     break
                 end
             end
 
             if authorized then
-              loadstring(game:HttpGet("https://raw.githubusercontent.com/emirontop3/Denco/refs/heads/main/Games/" .. game.PlaceId))()
+                print("Oyun Dogrulandi: " .. _G.Gname)
+                loadstring(game:HttpGet("https://raw.githubusercontent.com/emirontop3/Denco/refs/heads/main/Games/" .. game.PlaceId))()
             else
                 warn("Bu oyun icin yetkiniz yok. ID: " .. currentId)
             end
         else
-            warn("_G.Sg tablosu bulunamadi. GitHub dosyasini kontrol edin!")
+            warn("SupportedGameId tablosu bulunamadi. GitHub dosyasini kontrol edin!")
         end
     else
         warn("Kod yuklenirken hata (Syntax Hatasi): " .. tostring(err))
