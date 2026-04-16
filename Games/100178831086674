@@ -1,18 +1,18 @@
 local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
 
 local Window = Rayfield:CreateWindow({
-    Name = _G.Gname .. "| DencoHub",
-    LoadingTitle = "Sistemler Hazırlanıyor...",
+    Name = _G.Gname .. " | DencoHub",
+    LoadingTitle = "Last Updated : April 16, 2026",
     LoadingSubtitle = "by DencoHub",
     ConfigurationSaving = { Enabled = false }
 })
 
-local Tab = Window:CreateTab("Ana Menü", 4483362458)
+local Tab = Window:CreateTab("Main", 4483362458)
 
 local config = {
     Enabled = false,
     CurrentTime = 99,
-    SafePoint = CFrame.new(0, 50, 0) -- Bekleme alanı için geçici koordinat
+    SafePoint = CFrame.new(0, 30, 0) -- Bekleme alanı için geçici koordinat
 }
 
 -- RemoteEvent Dinleyici (Süreyi senkronize eder)
@@ -98,7 +98,7 @@ end)
 
 -- Arayüz
 Tab:CreateToggle({
-    Name = "Automatic Bombacı",
+    Name = "Auto Pass Bomb",
     CurrentValue = false,
     Flag = "BombAuto",
     Callback = function(Value)
@@ -112,6 +112,6 @@ Tab:CreateDropdown({
     CurrentOption = "Farthest",
     Flag = "KillDrop",
     Callback = function(Option)
-        -- Burası dropdown seçimine göre geliştirilebilir
+        --  i dont give a fuck this shi dont gonna work
     end,
 })
