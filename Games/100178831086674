@@ -87,7 +87,7 @@ task.spawn(function()
                         -- 4. ADIM: Bombayı verdikten sonra hemen en uzak noktaya kaç
                         local escapeTarget = getFarthestPlayer()
                         if escapeTarget and escapeTarget.Character then
-                             char.HumanoidRootPart.CFrame = escapeTarget.Character.HumanoidRootPart.CFrame * CFrame.new(0, 20, 0) -- Havaya kaçış
+                             char.HumanoidRootPart.CFrame = escapeTarget.Character.HumanoidRootPart.CFrame * CFrame.new(0, 0, 0) -- Havaya kaçış
                         end
                     end
                 end
