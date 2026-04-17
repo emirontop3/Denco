@@ -193,8 +193,7 @@ if success then
 
             for name, id in pairs(SupportedGameId) do
                 if tonumber(id) == currentId then
-                    foundGameName = name
-                    _G.Gname = name
+                    foundGameName = _G.Gname
                     break
                 end
             end
