@@ -1,3 +1,3 @@
-SupportedGameId = {
-["TimeBomb AnkleBreak"] =  100178831086674
+ SupportedGameId = {
+    ["TimeBomb AnkleBreak"] = {id = 100178831086674, lastUpdate = "17/04/2026"}
 }
