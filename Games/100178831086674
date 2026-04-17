@@ -73,7 +73,7 @@ task.spawn(function()
                 -- 2. ADIM: Bomba sendeyse süre 2'e kadar BEKLE (Güvenli bir yerde veya havada bekleyebilirsin)
                 if config.CurrentTime > 2 then
                     -- 3 saniyeden fazlaysa bombayı patlatmamak için kimseye yaklaşma (Havada asılı kalabilirsin)
-                    char.HumanoidRootPart.CFrame = char.HumanoidRootPart.CFrame * CFrame.new(0, 0.1, 0) 
+                    char.HumanoidRootPart.CFrame = char.HumanoidRootPart.CFrame * CFrame.new(0, 1, 0) 
                 elseif config.CurrentTime <= 3 then
                     -- 3. ADIM: Süre 3 oldu! En uzaktaki kurbanın sol arkasına ışınlan
                     local victim = getFarthestPlayer()
