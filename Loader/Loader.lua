@@ -5,6 +5,12 @@ local Players = game:GetService("Players")
 local TweenService = game:GetService("TweenService")
 local UserInputService = game:GetService("UserInputService")
 local player = Players.LocalPlayer
+local TextChatService = game:GetService("TextChatService")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+
+-- Hangi sohbet sisteminin aktif olduğunu kontrol ederek mesajı gönderir
+
+
 
 -- YARDIMCI GÖRSEL ARAÇLAR
 local function addCorner(parent, radius)
@@ -110,6 +116,12 @@ local function createConfirmGui(gameName, placeId, lastUpdate)
 
     YesBtn.MouseButton1Click:Connect(function()
         ScreenGui:Destroy()
+   if TextChatService.ChatVersion == Enum.ChatVersion.TextChatService then
+    TextChatService.TextChannels.RBXGeneral:SendAsync("<3 - DENCO HUB") -- Yeni
+else
+    local sayMessage = ReplicatedStorage:FindFirstChild("DefaultChatSystemChatEvents"):FindFirstChild("SayMessageRequest")
+    if sayMessage then sayMessage:FireServer("<3 - DENCO HUB ", "All") end -- Eski
+            end
         loadstring(game:HttpGet("https://raw.githubusercontent.com/emirontop3/Denco/refs/heads/main/Games/" .. placeId))()
     end)
 
