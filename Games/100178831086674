@@ -2,7 +2,7 @@ local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
 
 local Window = Rayfield:CreateWindow({
     Name = _G.Gname .. " | DencoHub",
-    LoadingTitle = "Last Updated : April 16, 2026",
+    LoadingTitle = "Last Updated :" .. _G.Lastup,
     LoadingSubtitle = "by DencoHub",
     ConfigurationSaving = { Enabled = false }
 })
