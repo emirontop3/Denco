@@ -70,7 +70,7 @@ local function createConfirmGui(gameName, placeId, lastUpdate)
 
     local Title = Instance.new("TextLabel")
     Title.Size = UDim2.new(1, 0, 0, 45)
-    Title.Text = "DENCO EXECUTOR"
+    Title.Text = "DENCO HUB"
     Title.Font = Enum.Font.GothamBold
     Title.TextColor3 = Color3.fromRGB(0, 255, 120)
     Title.TextSize = 18
