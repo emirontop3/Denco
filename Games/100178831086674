@@ -12,7 +12,7 @@ local Tab = Window:CreateTab("Main", 4483362458)
 local config = {
     Enabled = false,
     CurrentTime = 99,
-    SafePoint = CFrame.new(0, 10, 0) -- Bekleme alanı için geçici koordinat
+    SafePoint = CFrame.new(0, 0, 0) -- Bekleme alanı için geçici koordinat
 }
 
 -- RemoteEvent Dinleyici (Süreyi senkronize eder)
