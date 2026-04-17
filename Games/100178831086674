@@ -2,7 +2,7 @@ local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
 
 local Window = Rayfield:CreateWindow({
     Name = _G.Gname .. " | DencoHub",
-    LoadingTitle = "Last Update: " .. _G.Lastup,
+    LoadingTitle = "Last update: " .. _G.Lastup,
     LoadingSubtitle = "by DencoHub",
     ConfigurationSaving = { Enabled = false }
 })
@@ -14,9 +14,10 @@ local config = {
     AutoGet = false,
     AutoSave = false,
     CurrentTime = 99,
+    TargetPlayer = nil -- Seçilen hedef oyuncu
 }
 
--- Bombayı Nesne Olarak Bul (Karakter yamulmaması için Part bazlı)
+-- Bombayı Nesne Olarak Bul (Karakter dik duruşu için)
 local function getBombObject()
     local bomb = workspace:FindFirstChild("TimeBomb", true) or (workspace:FindFirstChild("NoahPandt") and workspace.NoahPandt:FindFirstChild("TimeBomb"))
     if bomb then
@@ -26,13 +27,11 @@ local function getBombObject()
     return nil
 end
 
--- Mesafe Hesaplama (En uzaktaki kişiyi bulmak için)
+-- En Uzaktaki Oyuncuyu Bul (Kaçış ve Yedek Hedef İçin)
 local function getFarthestPlayer()
     local farthestPlayer = nil
     local maxDistance = -1
     local lp = game.Players.LocalPlayer
-    if not lp.Character or not lp.Character:FindFirstChild("HumanoidRootPart") then return nil end
-
     for _, player in pairs(game.Players:GetPlayers()) do
         if player ~= lp and player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
             local dist = (lp.Character.HumanoidRootPart.Position - player.Character.HumanoidRootPart.Position).Magnitude
@@ -43,6 +42,17 @@ local function getFarthestPlayer()
         end
     end
     return farthestPlayer
+end
+
+-- Oyuncu Listesini Al (Dropdown için)
+local function getPlayerNames()
+    local names = {"None (Farthest)"}
+    for _, p in pairs(game.Players:GetPlayers()) do
+        if p ~= game.Players.LocalPlayer then
+            table.insert(names, p.Name)
+        end
+    end
+    return names
 end
 
 -- Zaman Senkronizasyonu
@@ -61,7 +71,7 @@ task.spawn(function()
         local hrp = char.HumanoidRootPart
         local hasBomb = lp:FindFirstChild("TimeBomb", true) or char:FindFirstChild("TimeBomb", true)
 
-        -- 1. AUTO SAVE (1 Saniye Kala Dikey Alış - Bombanın 4 birim üstüne)
+        -- 1. AUTO SAVE (1s - Üstten Alma)
         if config.AutoSave and not hasBomb and config.CurrentTime <= 1.1 then
             local bombObj = getBombObject()
             if bombObj then
@@ -69,7 +79,7 @@ task.spawn(function()
             end
         end
 
-        -- 2. AUTO GET (2 Saniye Kalana Kadar Çalışır - Dik Durur)
+        -- 2. AUTO GET (> 2s - Kovala)
         if config.AutoGet and not hasBomb and config.CurrentTime > 2 then
             local bombObj = getBombObject()
             if bombObj then
@@ -77,20 +87,31 @@ task.spawn(function()
             end
         end
 
-        -- 3. AUTO PASS (1 Saniye Kala Ver ve En Uzağa Kaç)
+        -- 3. AUTO PASS (1s - Seçili Kişiye Ver ve Kaç)
         if config.AutoPass and hasBomb and config.CurrentTime <= 1.2 then
-            local victim = getFarthestPlayer()
-            if victim and victim.Character and victim.Character:FindFirstChild("HumanoidRootPart") then
-                -- Önce kurbana ışınlanıp bombayı ver
-                hrp.CFrame = CFrame.new(victim.Character.HumanoidRootPart.Position)
-                
-                -- Kısa bir bekleme (Bombanın geçmesi için)
+            local target = nil
+            
+            -- Eğer bir hedef seçilmişse onu bul
+            if config.TargetPlayer and config.TargetPlayer ~= "None (Farthest)" then
+                local p = game.Players:FindFirstChild(config.TargetPlayer)
+                if p and p.Character and p.Character:FindFirstChild("HumanoidRootPart") then
+                    target = p
+                end
+            end
+            
+            -- Hedef seçilmemişse veya oyundan çıkmışsa en uzağa git
+            if not target then
+                target = getFarthestPlayer()
+            end
+
+            if target and target.Character then
+                hrp.CFrame = CFrame.new(target.Character.HumanoidRootPart.Position)
                 task.wait(0.15)
                 
-                -- ŞİMDİ: Hemen o anki en uzak kişiye ışınlanarak kaç
-                local escapeTarget = getFarthestPlayer()
-                if escapeTarget and escapeTarget.Character and escapeTarget.Character:FindFirstChild("HumanoidRootPart") then
-                    hrp.CFrame = CFrame.new(escapeTarget.Character.HumanoidRootPart.Position)
+                -- Kaçış: En uzak noktaya ışınlan
+                local escape = getFarthestPlayer()
+                if escape and escape.Character then
+                    hrp.CFrame = CFrame.new(escape.Character.HumanoidRootPart.Position)
                 end
             end
         end
@@ -99,23 +120,39 @@ end)
 
 --- ARAYÜZ ---
 
+local PlayerDropdown = Tab:CreateDropdown({
+    Name = "Select Target Player",
+    Options = getPlayerNames(),
+    CurrentOption = "None (Farthest)",
+    Flag = "TargetDropdown",
+    Callback = function(Option)
+        config.TargetPlayer = Option
+    end,
+})
+
+Tab:CreateButton({
+    Name = "Refresh Player List",
+    Callback = function()
+        PlayerDropdown:Refresh(getPlayerNames())
+    end,
+})
+
 Tab:CreateToggle({
-    Name = "Auto Save The Victm",
+    Name = "Auto Save (1s - Dikey)",
     CurrentValue = false,
     Flag = "TogSave",
     Callback = function(v) config.AutoSave = v end
 })
 
 Tab:CreateToggle({
-    Name = "Auto Get Bomb",
+    Name = "Auto Get (> 2s - Alıcı)",
     CurrentValue = false,
     Flag = "TogGet",
     Callback = function(v) config.AutoGet = v end
 })
 
 Tab:CreateToggle({
-    Name = "Auto Pass Bomb",
-    CurrentValue = false,
-    Flag = "TogPass",
+    Name = "Auto Pass (1s - Seçiliye Ver)",
+    CurrentValue = false,    Flag = "TogPass",
     Callback = function(v) config.AutoPass = v end
 })
