@@ -4,7 +4,7 @@ local MarketplaceService = game:GetService("MarketplaceService")
 local Players = game:GetService("Players")
 local player = Players.LocalPlayer
 
--- ORTAK STİL FONKSİYONU (Köşeler için)
+-- KÖŞE YUVARLAMA ARACI
 local function addCorner(parent, radius)
     local corner = Instance.new("UICorner")
     corner.CornerRadius = UDim.new(0, radius or 10)
@@ -12,59 +12,55 @@ local function addCorner(parent, radius)
     return corner
 end
 
--- 1. DESTEKLENEN OYUN İÇİN ONAY GUI
-local function createConfirmGui(gameName, placeId)
+-- 1. ONAY EKRANI (DESTEKLENEN OYUN)
+local function createConfirmGui(gameName, placeId, lastUpdate)
     local ScreenGui = Instance.new("ScreenGui")
-    local MainFrame = Instance.new("Frame")
-    local Title = Instance.new("TextLabel")
-    local Msg = Instance.new("TextLabel")
-    local YesBtn = Instance.new("TextButton")
-    local NoBtn = Instance.new("TextButton")
-
     ScreenGui.Name = "DencoConfirm"
     ScreenGui.Parent = (game:GetService("CoreGui") or player:WaitForChild("PlayerGui"))
 
-    MainFrame.Size = UDim2.new(0, 300, 0, 180)
-    MainFrame.Position = UDim2.new(0.5, -150, 0.5, -90)
-    MainFrame.BackgroundColor3 = Color3.fromRGB(25, 25, 30)
+    local MainFrame = Instance.new("Frame")
+    MainFrame.Size = UDim2.new(0, 320, 0, 200)
+    MainFrame.Position = UDim2.new(0.5, -160, 0.5, -100)
+    MainFrame.BackgroundColor3 = Color3.fromRGB(20, 20, 25)
     MainFrame.Parent = ScreenGui
-    addCorner(MainFrame, 15)
+    addCorner(MainFrame, 12)
 
-    Title.Size = UDim2.new(1, 0, 0, 40)
-    Title.Text = "SCRIPT FOUND!"
+    local Title = Instance.new("TextLabel")
+    Title.Size = UDim2.new(1, 0, 0, 45)
+    Title.Text = "✅ SCRIPT FOUND"
     Title.Font = Enum.Font.GothamBold
-    Title.TextColor3 = Color3.fromRGB(0, 255, 150)
+    Title.TextColor3 = Color3.fromRGB(0, 255, 120)
     Title.TextSize = 20
     Title.BackgroundTransparency = 1
     Title.Parent = MainFrame
 
-    Msg.Size = UDim2.new(1, -20, 0, 60)
-    Msg.Position = UDim2.new(0, 10, 0, 45)
-    Msg.Text = "We found a script for " .. gameName .. ".\nDo you want to execute it?"
+    local Msg = Instance.new("TextLabel")
+    Msg.Size = UDim2.new(1, -30, 0, 60)
+    Msg.Position = UDim2.new(0, 15, 0, 50)
+    Msg.Text = "Game: " .. gameName .. "\nLast Update: " .. lastUpdate
     Msg.Font = Enum.Font.GothamMedium
-    Msg.TextColor3 = Color3.new(1, 1, 1)
+    Msg.TextColor3 = Color3.fromRGB(220, 220, 220)
     Msg.TextSize = 14
-    Msg.TextWrapped = true
     Msg.BackgroundTransparency = 1
     Msg.Parent = MainFrame
 
-    -- EVET BUTONU
-    YesBtn.Size = UDim2.new(0, 120, 0, 40)
-    YesBtn.Position = UDim2.new(0, 20, 0, 120)
-    YesBtn.BackgroundColor3 = Color3.fromRGB(40, 180, 80)
+    local YesBtn = Instance.new("TextButton")
+    YesBtn.Size = UDim2.new(0, 130, 0, 40)
+    YesBtn.Position = UDim2.new(0, 20, 1, -60)
+    YesBtn.BackgroundColor3 = Color3.fromRGB(45, 150, 80)
     YesBtn.Text = "Execute"
-    YesBtn.Font = Enum.Font.GothamBold
     YesBtn.TextColor3 = Color3.new(1, 1, 1)
+    YesBtn.Font = Enum.Font.GothamBold
     YesBtn.Parent = MainFrame
     addCorner(YesBtn, 8)
 
-    -- HAYIR BUTONU
-    NoBtn.Size = UDim2.new(0, 120, 0, 40)
-    NoBtn.Position = UDim2.new(1, -140, 0, 120)
-    NoBtn.BackgroundColor3 = Color3.fromRGB(180, 40, 40)
+    local NoBtn = Instance.new("TextButton")
+    NoBtn.Size = UDim2.new(0, 130, 0, 40)
+    NoBtn.Position = UDim2.new(1, -150, 1, -60)
+    NoBtn.BackgroundColor3 = Color3.fromRGB(150, 45, 45)
     NoBtn.Text = "Cancel"
-    NoBtn.Font = Enum.Font.GothamBold
     NoBtn.TextColor3 = Color3.new(1, 1, 1)
+    NoBtn.Font = Enum.Font.GothamBold
     NoBtn.Parent = MainFrame
     addCorner(NoBtn, 8)
 
@@ -73,49 +69,44 @@ local function createConfirmGui(gameName, placeId)
         loadstring(game:HttpGet("https://raw.githubusercontent.com/emirontop3/Denco/refs/heads/main/Games/" .. placeId))()
     end)
 
-    NoBtn.MouseButton1Click:Connect(function()
-        ScreenGui:Destroy()
-    end)
+    NoBtn.MouseButton1Click:Connect(function() ScreenGui:Destroy() end)
 end
 
--- 2. DESTEKLENMEYEN OYUN İÇİN LİSTE GUI
+-- 2. DESTEKLENMEYEN OYUN LİSTESİ
 local function createUnsupportedGui(supportedGames)
     local ScreenGui = Instance.new("ScreenGui")
-    local MainFrame = Instance.new("Frame")
-    local Title = Instance.new("TextLabel")
-    local DeltaWarning = Instance.new("TextLabel")
-    local CloseBtn = Instance.new("TextButton")
-    local DropdownFrame = Instance.new("ScrollingFrame")
-    local UIListLayout = Instance.new("UIListLayout")
-
     ScreenGui.Name = "DencoSupportGui"
     ScreenGui.Parent = (game:GetService("CoreGui") or player:WaitForChild("PlayerGui"))
 
-    MainFrame.Size = UDim2.new(0, 350, 0, 380)
-    MainFrame.Position = UDim2.new(0.5, -175, 0.5, -190)
-    MainFrame.BackgroundColor3 = Color3.fromRGB(20, 20, 25)
+    local MainFrame = Instance.new("Frame")
+    MainFrame.Size = UDim2.new(0, 360, 0, 400)
+    MainFrame.Position = UDim2.new(0.5, -180, 0.5, -200)
+    MainFrame.BackgroundColor3 = Color3.fromRGB(15, 15, 20)
     MainFrame.Parent = ScreenGui
     addCorner(MainFrame, 15)
 
+    local Title = Instance.new("TextLabel")
     Title.Size = UDim2.new(1, 0, 0, 50)
-    Title.Text = "SORRY! NOT SUPPORTED"
+    Title.Text = "NOT SUPPORTED"
     Title.Font = Enum.Font.GothamBold
     Title.TextColor3 = Color3.fromRGB(255, 60, 60)
     Title.TextSize = 22
     Title.BackgroundTransparency = 1
     Title.Parent = MainFrame
 
-    DeltaWarning.Size = UDim2.new(1, 0, 0, 20)
-    DeltaWarning.Position = UDim2.new(0, 0, 0, 50)
-    DeltaWarning.Text = "⚠️ Delta executor does not allow changing games!"
-    DeltaWarning.TextColor3 = Color3.fromRGB(255, 180, 50)
-    DeltaWarning.Font = Enum.Font.GothamBold
-    DeltaWarning.TextSize = 12
-    DeltaWarning.BackgroundTransparency = 1
-    DeltaWarning.Parent = MainFrame
+    local Warning = Instance.new("TextLabel")
+    Warning.Size = UDim2.new(1, 0, 0, 25)
+    Warning.Position = UDim2.new(0, 0, 0, 45)
+    Warning.Text = "⚠️ Delta executor does not allow changing games!"
+    Warning.TextColor3 = Color3.fromRGB(255, 180, 50)
+    Warning.Font = Enum.Font.GothamBold
+    Warning.TextSize = 12
+    Warning.BackgroundTransparency = 1
+    Warning.Parent = MainFrame
 
-    CloseBtn.Size = UDim2.new(0, 25, 0, 25)
-    CloseBtn.Position = UDim2.new(1, -35, 0, 15)
+    local CloseBtn = Instance.new("TextButton")
+    CloseBtn.Size = UDim2.new(0, 26, 0, 26)
+    CloseBtn.Position = UDim2.new(1, -35, 0, 12)
     CloseBtn.BackgroundColor3 = Color3.fromRGB(255, 50, 50)
     CloseBtn.Text = "X"
     CloseBtn.TextColor3 = Color3.new(1, 1, 1)
@@ -123,61 +114,72 @@ local function createUnsupportedGui(supportedGames)
     addCorner(CloseBtn, 50)
     CloseBtn.MouseButton1Click:Connect(function() ScreenGui:Destroy() end)
 
-    DropdownFrame.Size = UDim2.new(1, -30, 0, 270)
-    DropdownFrame.Position = UDim2.new(0, 15, 0, 85)
-    DropdownFrame.BackgroundColor3 = Color3.fromRGB(30, 30, 35)
-    DropdownFrame.BorderSizePixel = 0
-    DropdownFrame.ScrollBarThickness = 2
-    DropdownFrame.Parent = MainFrame
+    local Scroll = Instance.new("ScrollingFrame")
+    Scroll.Size = UDim2.new(1, -30, 0, 290)
+    Scroll.Position = UDim2.new(0, 15, 0, 85)
+    Scroll.BackgroundColor3 = Color3.fromRGB(25, 25, 30)
+    Scroll.BorderSizePixel = 0
+    Scroll.ScrollBarThickness = 2
+    Scroll.Parent = MainFrame
 
-    UIListLayout.Parent = DropdownFrame
-    UIListLayout.Padding = UDim.new(0, 8)
-    UIListLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center
+    local List = Instance.new("UIListLayout")
+    List.Parent = Scroll
+    List.Padding = UDim.new(0, 8)
+    List.HorizontalAlignment = Enum.HorizontalAlignment.Center
 
-    for name, id in pairs(supportedGames) do
-        local GameBtn = Instance.new("TextButton")
-        local GameIcon = Instance.new("ImageLabel")
-        local GameName = Instance.new("TextLabel")
+    for name, data in pairs(supportedGames) do
+        local gameId = data.id or data
+        local gameUpdate = data.lastUpdate or "Unknown"
 
-        GameBtn.Size = UDim2.new(0, 300, 0, 55)
-        GameBtn.BackgroundColor3 = Color3.fromRGB(45, 45, 55)
-        GameBtn.Text = ""
-        GameBtn.Parent = DropdownFrame
-        addCorner(GameBtn, 10)
+        local Btn = Instance.new("TextButton")
+        Btn.Size = UDim2.new(0, 310, 0, 65)
+        Btn.BackgroundColor3 = Color3.fromRGB(40, 40, 50)
+        Btn.Text = ""
+        Btn.Parent = Scroll
+        addCorner(Btn, 10)
 
-        GameIcon.Size = UDim2.new(0, 40, 0, 40)
-        GameIcon.Position = UDim2.new(0, 10, 0, 7)
-        GameIcon.Parent = GameBtn
-        addCorner(GameIcon, 8)
+        local Icon = Instance.new("ImageLabel")
+        Icon.Size = UDim2.new(0, 48, 0, 48)
+        Icon.Position = UDim2.new(0, 8, 0, 8)
+        Icon.Parent = Btn
+        addCorner(Icon, 8)
 
-        -- Thumbnail Yükleme
         task.spawn(function()
-            local s, info = pcall(function() return MarketplaceService:GetProductInfo(id) end)
-            if s and info.IconImageAssetId then
-                GameIcon.Image = "rbxassetid://" .. info.IconImageAssetId
-            else
-                GameIcon.Image = "rbxthumb://type=GameIcon&id=" .. id .. "&w=150&h=150"
-            end
+            local cleanId = string.format("%.0f", tonumber(gameId))
+            Icon.Image = "rbxthumb://type=GameIcon&id=" .. cleanId .. "&w=150&h=150"
         end)
 
-        GameName.Size = UDim2.new(1, -70, 1, 0)
-        GameName.Position = UDim2.new(0, 60, 0, 0)
-        GameName.Text = name
-        GameName.TextColor3 = Color3.new(1, 1, 1)
-        GameName.Font = Enum.Font.GothamSemibold
-        GameName.TextXAlignment = Enum.TextXAlignment.Left
-        GameName.BackgroundTransparency = 1
-        GameName.Parent = GameBtn
+        local Label = Instance.new("TextLabel")
+        Label.Size = UDim2.new(1, -70, 0, 30)
+        Label.Position = UDim2.new(0, 65, 0, 8)
+        Label.Text = name
+        Label.TextColor3 = Color3.new(1, 1, 1)
+        Label.Font = Enum.Font.GothamSemibold
+        Label.TextSize = 14
+        Label.TextXAlignment = Enum.TextXAlignment.Left
+        Label.BackgroundTransparency = 1
+        Label.Parent = Btn
 
-        GameBtn.MouseButton1Click:Connect(function()
-            TeleportService:Teleport(id, player)
+        local UpdateLabel = Instance.new("TextLabel")
+        UpdateLabel.Size = UDim2.new(1, -70, 0, 20)
+        UpdateLabel.Position = UDim2.new(0, 65, 0, 32)
+        UpdateLabel.Text = "Updated: " .. gameUpdate
+        UpdateLabel.TextColor3 = Color3.fromRGB(150, 150, 150)
+        UpdateLabel.Font = Enum.Font.Gotham
+        UpdateLabel.TextSize = 11
+        UpdateLabel.TextXAlignment = Enum.TextXAlignment.Left
+        UpdateLabel.BackgroundTransparency = 1
+        UpdateLabel.Parent = Btn
+
+        Btn.MouseButton1Click:Connect(function()
+            TeleportService:Teleport(tonumber(gameId), player)
         end)
         
-        DropdownFrame.CanvasSize = UDim2.new(0, 0, 0, UIListLayout.AbsoluteContentSize.Y + 10)
+        Scroll.CanvasSize = UDim2.new(0, 0, 0, List.AbsoluteContentSize.Y + 10)
     end
 end
 
--- ANA SİSTEM
+-- SİSTEMİ BAŞLAT
 local success, content = pcall(function()
     return game:HttpGet(url)
 end)
@@ -186,24 +188,36 @@ if success then
     local func = loadstring(content)
     if func then
         func()
-        task.wait(0.1)
+        task.wait(0.3) -- Verilerin tam işlenmesi için süre
         if SupportedGameId then
-            local currentId = game.PlaceId
-            local foundGameName = nil
+            local currentId = tostring(game.PlaceId)
+            local foundName = nil
+            local foundUpdate = "Unknown"
 
-            for name, id in pairs(SupportedGameId) do
-                if tonumber(id) == currentId then
-                    foundGameName = name
+            for name, data in pairs(SupportedGameId) do
+                local checkId = ""
+                if type(data) == "table" then
+                    checkId = tostring(data.id)
+                else
+                    checkId = tostring(data)
+                end
+
+                if checkId == currentId then
+                    foundName = name
+                    if type(data) == "table" then
+                        foundUpdate = tostring(data.lastUpdate or "Unknown")
+                    end
+                    
+                    -- GLOBAL DEĞİŞKENLER
                     _G.Gname = name
+                    _G.Lastup = foundUpdate
                     break
                 end
             end
 
-            if foundGameName then
-                -- OYUN DESTEKLENİYORSA ONAY PENCERESİ AÇ
-                createConfirmGui(foundGameName, currentId)
+            if foundName then
+                createConfirmGui(foundName, game.PlaceId, foundUpdate)
             else
-                -- OYUN DESTEKLENMİYORSA LİSTE AÇ
                 createUnsupportedGui(SupportedGameId)
             end
         end
