@@ -12,7 +12,7 @@ local Tab = Window:CreateTab("Main", 4483362458)
 local config = {
     Enabled = false,
     CurrentTime = 99,
-    SafePoint = CFrame.new(0, 30, 0) -- Bekleme alanı için geçici koordinat
+    SafePoint = CFrame.new(0, 10, 0) -- Bekleme alanı için geçici koordinat
 }
 
 -- RemoteEvent Dinleyici (Süreyi senkronize eder)
@@ -70,8 +70,8 @@ task.spawn(function()
                     char.HumanoidRootPart.CFrame = carrier.Character.HumanoidRootPart.CFrame
                 end
             else
-                -- 2. ADIM: Bomba sendeyse süre 3'e kadar BEKLE (Güvenli bir yerde veya havada bekleyebilirsin)
-                if config.CurrentTime > 3 then
+                -- 2. ADIM: Bomba sendeyse süre 2'e kadar BEKLE (Güvenli bir yerde veya havada bekleyebilirsin)
+                if config.CurrentTime > 2 then
                     -- 3 saniyeden fazlaysa bombayı patlatmamak için kimseye yaklaşma (Havada asılı kalabilirsin)
                     char.HumanoidRootPart.CFrame = char.HumanoidRootPart.CFrame * CFrame.new(0, 0.1, 0) 
                 elseif config.CurrentTime <= 3 then
@@ -87,7 +87,7 @@ task.spawn(function()
                         -- 4. ADIM: Bombayı verdikten sonra hemen en uzak noktaya kaç
                         local escapeTarget = getFarthestPlayer()
                         if escapeTarget and escapeTarget.Character then
-                             char.HumanoidRootPart.CFrame = escapeTarget.Character.HumanoidRootPart.CFrame * CFrame.new(0, 50, 0) -- Havaya kaçış
+                             char.HumanoidRootPart.CFrame = escapeTarget.Character.HumanoidRootPart.CFrame * CFrame.new(0, 20, 0) -- Havaya kaçış
                         end
                     end
                 end
